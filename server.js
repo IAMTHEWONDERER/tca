@@ -1,5 +1,4 @@
-// Merge of server.js and app.js
-
+const User = require('./models/user');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -11,18 +10,17 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const http = require('http');
 const socketio = require('socket.io');
+const uuid = require('uuid');
+
 
 const app = express();
 
 // MongoDB URI
-const uri="use ur own"// Connect to MongoDB
+const uri = "user ur own";
 mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
-
-// User model
-const User = require('./models/user');
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -30,6 +28,7 @@ app.use(bodyParser.json());
 
 // Passport middleware
 app.use(passport.initialize());
+app.use('/models', express.static(path.join(__dirname, 'models')));
 
 const generateSocketId = () => {
   return uuid.v4(); 
@@ -63,13 +62,11 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, 'models', 'register.html'));
 });
 
-// Route for registration form submission
-// Update the registration endpoint (/register) to save user data along with socket ID
+// register
 app.post('/register', (req, res) => {
   const { name, email, password } = req.body;
-
-  // Generate a unique socket ID for the user
-  const socketId = generateSocketId(); // You need to implement this function
+//generate socketid
+  const socketId = generateSocketId(); 
 
   User.findOne({ email }).then(user => {
     if (user) {
@@ -92,7 +89,6 @@ app.post('/register', (req, res) => {
             .then(user => {
               // Generate token for the new user
               const payload = { id: user.id, name: user.name };
-              res.redirect('/socket')
               jwt.sign(
                 payload,
                 'secret',
@@ -150,7 +146,7 @@ app.get(
 );
 
 // Set up static directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'models')));
 
 // Create http server
 const server = http.createServer(app);
@@ -173,16 +169,27 @@ io.on('connection', socket => {
   });
 
   socket.on('message', data => {
-    // console.log(data)
+    console.log('Message received:', data); // Log the received message data
     socket.broadcast.emit('chat-message', data);
   });
-
+  
   socket.on('feedback', data => {
+    console.log('Feedback received:', data); // Log the received feedback data
     socket.broadcast.emit('feedback', data);
   });
+  
 });
 
-// Route for registration page
+io.on('connection', (socket) => {
+  console.log('Socket connected', socket.id);
+  // Handle socket disconnection
+  socket.on('disconnect', () => {
+    console.log('Socket disconnected', socket.id);
+    
+    // Perform cleanup or other actions as needed
+  })
+
+})
 
 // Route for Socket.io page
 app.get('/socket', (req, res) => {
