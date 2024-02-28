@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <form id="registerForm" class="sing-in">
+        <label for="name">Name</label>
+        <input type="text" class="name" id="name" required>
+        <label for="email">Email</label>
+        <input type="text" class="email" id="email" required>
+        <label for="password">Password</label>
+        <input type="password" class="password" id="password" required>
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default 
+    
+            // Get form data
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+    
+            // stores the username in LS
+            localStorage.setItem('username', name);
+    
+            // Sends post request 
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle response 
+                console.log(data); 
+                window.location.href = '/socket';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error 
+            });
+            window.location.href = `/socket?username=${encodeURIComponent(name)}`;
+        });
+    </script>
+</body>
+</html>
