@@ -49,15 +49,5 @@
       crossorigin="anonymous"
     ></script>
     <script src="index.js" defer></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Retrieve the username from the URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const username = urlParams.get('username') || 'anonymous';
-
-      // Set the username as the text content of the h3 element with id="name-input"
-      document.getElementById('name-input').textContent = username;
-    });
-  </script>
   </body>
 </html>

@@ -8,6 +8,13 @@ const messageForm = document.getElementById('message-form')
 const messageInput = document.getElementById('message-input')
 
 const messageTone = new Audio('/message-tone.mp3')
+document.addEventListener('DOMContentLoaded', () => {
+  // Retrieve the username from the URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get('username') || 'anonymous';
+
+  nameInput.textContent = username; 
+});
 
 messageForm.addEventListener('submit', (e) => {
   e.preventDefault()
@@ -22,7 +29,7 @@ function sendMessage() {
   if (messageInput.value === '') return
   // console.log(messageInput.value)
   const data = {
-    name: nameInput.value,
+    name: nameInput.textContent,
     message: messageInput.value,
     dateTime: new Date(),
   }
@@ -43,7 +50,7 @@ function addMessageToUI(isOwnMessage, data) {
       <li class="${isOwnMessage ? 'message-right' : 'message-left'}">
           <p class="message">
             ${data.message}
-            <span>${data.name} ● ${moment(data.dateTime).fromNow()}</span>
+            <span>${data.name} - ${moment(data.dateTime).fromNow()}</span>
           </p>
         </li>
         `
@@ -58,13 +65,13 @@ function scrollToBottom() {
 
 messageInput.addEventListener('focus', (e) => {
   socket.emit('feedback', {
-    feedback: `✍️ ${nameInput.value} is typing a message`,
+    feedback: `✍️ ${nameInput.textContent} is typing a message`,
   })
 })
 
 messageInput.addEventListener('keypress', (e) => {
   socket.emit('feedback', {
-    feedback: `✍️ ${nameInput.value} is typing a message`,
+    feedback: `✍️ ${nameInput.textContent} is typing a message`,
   })
 })
 messageInput.addEventListener('blur', (e) => {
@@ -91,8 +98,7 @@ function clearFeedback() {
 
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get('username') || 'anonymous';
-document.getElementById('name-display').innerText = username;
+document.getElementById('name-input').textContent = username;
 socket.on('disconnect', () => {
   console.log('Socket disconnected');
-  // You can perform any necessary cleanup or reconnection logic here
 });

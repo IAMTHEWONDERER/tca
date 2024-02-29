@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="register.html">Register</a></p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const loginForm = document.getElementById('login-form');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Send login data to the server
+            socket.emit('login', { email, password });
+        });
+    </script>
+</body>
+</html>

@@ -16,8 +16,7 @@ const uuid = require('uuid');
 const app = express();
 
 // MongoDB URI
-const uri = "user ur own";
-mongoose
+const uri = "do ur own";mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
